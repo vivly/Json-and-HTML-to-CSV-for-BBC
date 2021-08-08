@@ -13,7 +13,7 @@ def save_json_to_csv(index_path, csv_path):
         data_frame = pd.DataFrame(columns=column_list)
         for i in range(0, n):
             json_path = csv_data_frame.iloc[i, 2]
-            with open(json_path, encoding='utf-8') as f:
+            with open(json_path, encoding='utf-8', errors='ignore') as f:
                 line = f.readline()
                 try:
                     json.loads(line)
@@ -54,7 +54,7 @@ def save_json_to_csv(index_path, csv_path):
                 except KeyError:
                     source_domain = ''
                 try:
-                    main_text = d['maintext']
+                    main_text = ''
                 except KeyError:
                     main_text = ''
 

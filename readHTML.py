@@ -20,6 +20,7 @@ def readNews(news_path, index_path):
             except NoContentException as e:
                 print(e)
                 data_frame = htmlReader(e.row, e.column, index_path, data_frame)
+    return data_frame
 
 
 def htmlReader(row, column, index_path, dataframe):
@@ -130,4 +131,5 @@ if __name__ == "__main__":
     index_csv_suffix = r'\index.csv'
     news_path = rootPath + news_csv_suffix
     index_path = rootPath + index_csv_suffix
-    readNews(news_path, index_path)
+    dataframe = readNews(news_path, index_path)
+    dataframe.to_csv(news_path, encoding='utf-8', index=False)
