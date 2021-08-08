@@ -10,6 +10,7 @@ def readNews(news_path, index_path):
     column_count = len(column_list)
     n = len(data_frame)
     for i in range(0, n):
+        bs, data_frame = mainTextReader(i, index_path, data_frame)
         for k in range(1, column_count):
             try:
                 block_content = data_frame.iloc[i, k]
@@ -19,11 +20,10 @@ def readNews(news_path, index_path):
                     print("id为 " + str(i) + " 的 " + column_list[k] + " 列内容完整。")
             except NoContentException as e:
                 print(e)
-                data_frame = htmlReader(e.row, e.column, index_path, data_frame)
+                data_frame = htmlReader(e.row, e.column, bs, data_frame)
     return data_frame
 
-
-def htmlReader(row, column, index_path, dataframe):
+def mainTextReader(row, index_path,dataframe):
     index_csv_data = ''
     try:
         index_csv_data = pd.read_csv(index_path)
@@ -34,6 +34,17 @@ def htmlReader(row, column, index_path, dataframe):
     html_path = index_data_frame.iloc[row, 4]
     html_file = open(html_path, 'rb').read()
     bs = bs4.BeautifulSoup(html_file, 'html.parser')
+    main_text_list = []
+    for x in bs.find_all(name='p'):
+        main_text_string = x.get_text()
+        main_text_list.append(main_text_string)
+    main_text = ''.join(main_text_list)
+    temp_dataframe = dataframe
+    temp_dataframe.iloc[row, 4] = main_text
+    return bs, temp_dataframe
+
+
+def htmlReader(row, column, bs, dataframe):
     dict_for_keyword = {'title_page': titlePageModifier, 'title': titleModifier, 'description': descriptionModifier,
                         'url': urlModifier, 'image_url': imageUrlModifier, 'language': languageModifier,
                         'source_domain': sourceDomainModifier, 'date_publish':datePublishModifier}
@@ -97,7 +108,7 @@ def sourceDomainModifier(bs, row, column, dataframe):
 
 
 def datePublishModifier(bs, row, column, dataframe):
-    date_formula = re.compile('\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}')
+    date_formula = re.compile(r'\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}')
     t_list = bs.find_all(name='time', attrs={'data-testid': 'timestamp'})
     date_time = date_formula.search(str(t_list[0])).group(0)
     temp = date_time.split("T")
