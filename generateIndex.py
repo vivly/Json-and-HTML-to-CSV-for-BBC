@@ -1,9 +1,8 @@
 import os
 import pandas as pd
-import json
 
 
-def getJsonList(path, suffix):
+def getIndexList(path, suffix):
     inputFileName = []
     inputFilePath = []
     for root, dirs, files in os.walk(path, topdown=False):
@@ -14,16 +13,18 @@ def getJsonList(path, suffix):
     return inputFileName, inputFilePath
 
 
-def saveindex(nameList, pathList, save_path):
-    dataframe = pd.DataFrame({'Name List': nameList, 'Path List': pathList})
+def saveIndex(json_name_list, json_path_list, html_name_list, html_path_list, save_path):
+    dataframe = pd.DataFrame({'Json Name List': json_name_list, 'Json Path List': json_path_list,
+                              'HTML Name List': html_name_list, 'HTML Path List': html_path_list})
+    dataframe.index.name = 'id'
     dataframe.to_csv(save_path, encoding='utf-8')
 
+
 if __name__ == '__main__':
-    rootPath = r"D:\news_set\data\test"
-    index_name_suffix = r'\index.csv'
-    string_list = [rootPath,index_name_suffix]
-    temp = ''
-    save_index_path = temp.join(string_list)
-    jsonNameList, jsonPathList = getJsonList(rootPath, '.json')
-    saveindex(jsonNameList, jsonPathList, save_index_path)
+    root_path = r"D:\news_set\data\test"
+    index_json_suffix = r'\index.csv'
+    save_json_index_path = root_path + index_json_suffix
+    jsonNameList, jsonPathList = getIndexList(root_path, '.json')
+    htmlNameList, htmlPathList = getIndexList(root_path, '.html')
+    saveIndex(jsonNameList, jsonPathList, htmlNameList, htmlPathList, save_json_index_path)
 

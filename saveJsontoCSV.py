@@ -3,20 +3,22 @@ import pandas as pd
 import json
 
 
-def savejsontocsv(index_path, csv_path):
-    if(os.path.exists(index_path)):
+def save_json_to_csv(index_path, csv_path):
+    if os.path.exists(index_path):
         csv_data = pd.read_csv(index_path)
         csv_data_frame = pd.DataFrame(csv_data)
-        for i in range(0, 1):
-            json_path = csv_data_frame.iloc[0,2]
+        n = len(csv_data)
+        column_list = ['date_publish', 'title', 'description', 'main_text', 'url', 'image_url', 'language',
+                       'source_domain', 'title_page']
+        data_frame = pd.DataFrame(columns=column_list)
+        for i in range(0, n):
+            json_path = csv_data_frame.iloc[i, 2]
             with open(json_path, encoding='utf-8') as f:
                 line = f.readline()
                 try:
                     json.loads(line)
                 except json.decoder.JSONDecodeError:
-                    string_list = [line, '""}']
-                    temp = ''
-                    line = temp.join(string_list)
+                    line = line + '""}'
                 d = json.loads(line)
 
                 try:
@@ -56,31 +58,21 @@ def savejsontocsv(index_path, csv_path):
                 except KeyError:
                     main_text = ''
 
-                if(os.path.exists(csv_path)):
-                    pass
-                else:
-                    column_list = ['date_publish', 'title', 'description', 'main_text', 'url', 'image_url', 'language',
-                                   'source_domain', 'title_page']
-                    data_list = [date_publish, title, description, main_text, url, image_url, language,
-                                 source_domain, title_page]
-                    data_dict = dict(zip(column_list, data_list))
-                    print(date_publish)
-                    data_frame = pd.DataFrame(columns=column_list)
-                    data_frame = data_frame.append(data_dict, ignore_index=True)
-                    data_frame.to_csv(csv_path, encoding='utf-8')
-
-
+                data_list = [date_publish, title, description, main_text, url, image_url, language,
+                             source_domain, title_page]
+                data_dict = dict(zip(column_list, data_list))
+                data_frame = data_frame.append(data_dict, ignore_index=True)
+        data_frame.index.name = 'id'
+        data_frame.to_csv(csv_path, encoding='utf-8')
 
     else:
         print("Index file does not exist, please generate index file first.")
+
 
 if __name__ == '__main__':
     rootPath = r"D:\news_set\data\test"
     index_name_suffix = r'\index.csv'
     news_csv_suffix = r'\news.csv'
-    string_list_1 = [rootPath, index_name_suffix]
-    string_list_2 = [rootPath, news_csv_suffix]
-    temp = ''
-    save_index_path = temp.join(string_list_1)
-    save_news_path = temp.join(string_list_2)
-    savejsontocsv(save_index_path, save_news_path)
+    save_index_path = rootPath + index_name_suffix
+    save_news_path = rootPath + news_csv_suffix
+    save_json_to_csv(save_index_path, save_news_path)
