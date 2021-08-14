@@ -21,7 +21,7 @@ def saveIndex(json_name_list, json_path_list, html_name_list, html_path_list, sa
 
 
 if __name__ == '__main__':
-    root_path = r"D:\news_set\data\test"
+    root_path = r"D:\news_set\data\Europe\Italy\8-6"
     index_json_suffix = r'\index.csv'
     save_json_index_path = root_path + index_json_suffix
     jsonNameList, jsonPathList = getIndexList(root_path, '.json')

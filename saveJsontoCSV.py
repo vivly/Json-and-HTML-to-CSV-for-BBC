@@ -70,7 +70,7 @@ def save_json_to_csv(index_path, csv_path):
 
 
 if __name__ == '__main__':
-    rootPath = r"D:\news_set\data\test"
+    rootPath = r"D:\news_set\data\Europe\Italy\8-6"
     index_name_suffix = r'\index.csv'
     news_csv_suffix = r'\news.csv'
     save_index_path = rootPath + index_name_suffix
